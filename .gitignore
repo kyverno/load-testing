@@ -1,0 +1,7 @@
+# ignore log files that will be generated
+k6/*-logs.txt
+
+# ignore a nodeJS files that can help during test development (e.g. install @types/k6 as dev dependency)
+k6/tests/package.json
+k6/tests/package-lock.json
+k6/tests/node_modules
