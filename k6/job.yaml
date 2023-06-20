@@ -1,0 +1,57 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: load-test
+spec:
+  template:
+    spec:
+      serviceAccountName: load-test
+      containers:
+        - image: grafana/k6:0.45.0
+          resources: {}
+          name: k6
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |
+              k6 run /script/script.js --summary-export=summary.json --no-usage-report
+              echo "============== STRIP =============="
+              cat summary.json
+          env:
+            - name: KUBERNETES_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: load-test-token
+                  key: token
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            # this is needed for custom or private CA's
+            # there is no support for custom CA certs: https://github.com/grafana/k6/issues/218
+            - name: K6_INSECURE_SKIP_TLS_VERIFY
+              value: "true"
+            - name: K6_VUS
+              valueFrom:
+                configMapKeyRef:
+                  name: load-test
+                  key: vus
+            - name: K6_ITERATIONS
+              valueFrom:
+                configMapKeyRef:
+                  name: load-test
+                  key: iterations
+          volumeMounts:
+            - name: script
+              mountPath: /script
+      volumes:
+        - name: script
+          configMap:
+            name: load-test
+            items:
+              - key: util.js
+                path: util.js
+              - key: script.js
+                path: script.js
+      restartPolicy: OnFailure
