@@ -11,8 +11,8 @@ export const generatePod = (name = 'test', image = 'alpine') => {
           name: 'test',
           image,
           securityContext: {
-            allowPrivilegeEscalation: false,
-            runAsNonRoot: true,
+            allowPrivilegeEscalation: 'false',
+            runAsNonRoot: 'true',
             seccompProfile: {
                 type: 'RuntimeDefault'
             },
