@@ -10,6 +10,14 @@ spec:
         - image: grafana/k6:0.45.0
           resources: {}
           name: k6
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+              - ALL
           command:
             - /bin/sh
             - -c

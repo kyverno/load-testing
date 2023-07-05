@@ -1,4 +1,4 @@
-export const generatePod = (name = 'test', image = 'alpine') => {
+export const generatePod = (name = 'test', image = 'nginx') => {
   return {
     kind: 'Pod',
     apiVersion: 'v1',
@@ -10,6 +10,18 @@ export const generatePod = (name = 'test', image = 'alpine') => {
         {
           name: 'test',
           image,
+          securityContext: {
+            allowPrivilegeEscalation: false,
+            runAsNonRoot: true,
+            seccompProfile: {
+                type: 'RuntimeDefault'
+            },
+            capabilities: {
+                drop: [
+                    'ALL'
+                ]
+            }
+          }
         }
       ],
     }
