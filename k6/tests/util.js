@@ -1,4 +1,4 @@
-export const generatePod = (name = 'test', image = 'alpine') => {
+export const generatePod = (name = 'test', image = 'nginx') => {
   return {
     kind: 'Pod',
     apiVersion: 'v1',
