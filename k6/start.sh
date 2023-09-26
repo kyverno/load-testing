@@ -19,6 +19,13 @@ if [[ $ITERATIONS -lt $VUS ]]; then
 	exit 1
 fi
 
+echo "Running $SCRIPT..."
+if [[ $SCRIPT == *"kyverno-pss.js" ]]; then
+	echo "installing PSS policies" 1>&2
+	helm repo add kyverno https://kyverno.github.io/kyverno/
+	helm install kyverno-policies --namespace kyverno-policies kyverno/kyverno-policies --create-namespace -f pss-values.yml
+fi
+
 echo "Deploying namespace..."
 kubectl create ns "$NAMESPACE"
 
@@ -53,3 +60,8 @@ kubectl delete clusterrolebinding load-test
 
 echo "Clean up..."
 kubectl delete ns "$NAMESPACE"
+
+if [[ $SCRIPT == *"kyverno-pss.js" ]]; then
+	echo "deleting PSS policies" 1>&2
+	helm uninstall kyverno-policies -n kyverno-policies
+fi
