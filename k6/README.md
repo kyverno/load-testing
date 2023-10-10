@@ -6,9 +6,9 @@ This folder contains some Kubernetes resources and a script to start load tests 
 
 ## How does it work?
 
-Under the surface we're using [k6](https://k6.io/) as load testing. It's written in Go but the tests are written in JavaScript. You can either check existing tests or read the [documentation(https://k6.io/docs/)]. Existing tests are in the `tests/` subfolder.
+Under the surface we're using [k6](https://k6.io/) as load testing. It's written in Go but the tests are written in JavaScript. You can either check existing tests or read the [documentation](https://k6.io/docs/). Existing tests are in the `tests/` subfolder.
 
-To start the tests you can use the `start.sh` script and provide three paremeters:
+To start the tests you can use the `start.sh` script and provide three parameters:
 
 1. the script you want to execute (e.g. tests/my-test.js)
 2. the number of concurrent "users" (in k6 they're called virtual users or vus)
