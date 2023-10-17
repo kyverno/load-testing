@@ -1,0 +1,29 @@
+name: load-test
+
+permissions: {}
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+      - 'add_threshold'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run-load-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+      - name: Setup build env
+        uses: ./.github/actions/setup-test-env
+        timeout-minutes: 10
+      - name: Wait for kyverno ready
+        uses: ./.github/actions/kyverno-wait-ready
+      - name: Run local k6 test
+        uses: grafana/k6-action@v0.3.0
+        with:
+          filename: k6/tests/kyverno-pss.js 10 100
