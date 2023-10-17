@@ -41,7 +41,7 @@ $(HELM):
 .PHONY: kind-create-cluster
 kind-create-cluster: $(KIND) ## Create kind cluster
 	@echo Create kind cluster... >&2
-	@$(KIND) create cluster --name $(KIND_NAME) --image $(KIND_IMAGE) --config ./config/kind/default.yaml
+	@$(KIND) create cluster --name $(KIND_NAME) --image $(KIND_IMAGE) --config ./configs/kind/default.yaml
 
 .PHONY: kind-install-kyverno
 kind-install-kyverno: $(HELM) helm-update-repo ## Install kyverno helm chart
