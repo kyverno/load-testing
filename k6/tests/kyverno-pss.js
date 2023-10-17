@@ -17,6 +17,13 @@ import { buildKubernetesBaseUrl, generatePod, getParamsWithAuth, getTestNamespac
 const baseUrl = buildKubernetesBaseUrl();
 const namespace = getTestNamespace();
 
+export const options = {
+  thresholds: {
+    http_req_failed: ['rate<0.01'], // http errors should be less than 1%
+    http_req_duration: ['p(95)<200'], // 95% of requests should be below 200ms
+  },
+};
+
 export default function() {
   const podName = `test-${randomString(8)}`;
   const pod = generatePod(podName);
