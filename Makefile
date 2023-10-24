@@ -38,7 +38,7 @@ helm-add-repo: $(HELM)
 .PHONY: helm-install-kyverno
 helm-install-kyverno: helm-add-repo ## Install kyverno helm chart
 	@echo Install kyverno chart... >&2
-	@$(HELM) upgrade --install kyverno --namespace kyverno --create-namespace --wait kyverno/kyverno --devel --values ./configs/kyverno/kyverno.yaml
+	@$(HELM) upgrade --install kyverno --namespace kyverno --create-namespace --wait kyverno/kyverno --devel --values ./configs/kyverno/values.yaml
 
 ########
 # KIND #
