@@ -30,8 +30,8 @@ $(HELM):
 # HELM #
 ########
 
-.PHONY: helm-add-repo # Update Kyverno chart repository
-	@echo Install kyverno chart... >&2
+.PHONY: helm-add-repo # Add Kyverno chart repository
+	@echo Add kyverno chart... >&2
 	@$(HELM) repo add kyverno https://kyverno.github.io/kyverno/
 
 ########
