@@ -31,8 +31,14 @@ $(HELM):
 ########
 
 .PHONY: helm-add-repo # Add Kyverno chart repository
+helm-add-repo: $(HELM)
 	@echo Add kyverno chart... >&2
 	@$(HELM) repo add kyverno https://kyverno.github.io/kyverno/
+
+.PHONY: helm-install-kyverno
+helm-install-kyverno: helm-add-repo ## Install kyverno helm chart
+	@echo Install kyverno chart... >&2
+	@$(HELM) upgrade --install kyverno --namespace kyverno --create-namespace --wait kyverno/kyverno --devel --values ./configs/kyverno/kyverno.yaml
 
 ########
 # KIND #
@@ -43,7 +49,5 @@ kind-create-cluster: $(KIND) ## Create kind cluster
 	@echo Create kind cluster... >&2
 	@$(KIND) create cluster --name $(KIND_NAME) --image $(KIND_IMAGE) --config ./configs/kind/default.yaml
 
-.PHONY: kind-install-kyverno
-kind-install-kyverno: $(HELM) helm-add-repo ## Install kyverno helm chart
-	@echo Install kyverno chart... >&2
-	@$(HELM) upgrade --install kyverno --namespace kyverno --create-namespace --wait kyverno/kyverno --devel --values ./configs/kyverno/kyverno.yaml
+.PHONY: kind-deploy-kyverno
+kind-deploy-kyverno: helm-add-repo helm-install-kyverno ## Deploy kyverno helm chart
