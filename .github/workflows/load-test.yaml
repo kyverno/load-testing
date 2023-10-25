@@ -24,11 +24,6 @@ jobs:
       - name: Wait for kyverno ready
         uses: ./.github/actions/kyverno-wait-ready
       - name: Run local k6 test
-        shell: bash
-        run: |
-          cd k6
-          ./start.sh tests/kyverno-pss.js 10 1000
-          cat kyverno-pss.js-10vu-1000it-logs.txt
-        # uses: grafana/k6-action@v0.3.0
-        # with:
-          # filename: k6/tests/kyverno-pss.js 10 100
+        uses: grafana/k6-action@v0.3.0
+        with:
+          filename: k6/tests/test.js
