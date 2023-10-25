@@ -32,7 +32,7 @@ jobs:
           export SCRIPT=kyverno-pss.js
           ./start.sh tests/$SCRIPT $VUS $ITERATIONS
 
-          grep "level=error" "$SCRIPT-$VUSvu-$ITERATIONSit-logs.txt"
+          grep "level=error" "$SCRIPT-${VUS}vu-${ITERATIONS}it-logs.txt"
           # Store the exit code of the grep command
           exit_code=$?
 
