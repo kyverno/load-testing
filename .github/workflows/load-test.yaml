@@ -27,7 +27,26 @@ jobs:
         shell: bash
         run: |
           cd k6
-          ./start.sh tests/kyverno-pss.js 10 1000
+          export VUS=10
+          export ITERATIONS=1000
+          export SCRIPT=kyverno-pss.js
+          ./start.sh tests/$SCRIPT $VUS $ITERATIONS
+
+          grep "level=error" "$SCRIPT-$VUSvu-$ITERATIONSit-logs.txt"
+          # Store the exit code of the grep command
+          exit_code=$?
+
+          # Check if the exit code is 0 (match found) or 1 (no match found)
+          if [ $exit_code -eq 0 ]; then
+              echo "Error found in the file."
+              exit 1
+          elif [ $exit_code -eq 1 ]; then
+              echo "No error found in the file."
+              exit 0
+          else
+              echo "An error occurred while searching the file."
+              exit 1
+          fi
           cat kyverno-pss.js-10vu-1000it-logs.txt
         # uses: grafana/k6-action@v0.3.0
         # with:
