@@ -46,15 +46,7 @@ jobs:
           export SCRIPT=${{ join(matrix.scripts.values, ',') }}
           make kyverno-pss-block
           cat k6/${SCRIPT}-${VUS}vu-${ITERATIONS}it-logs.txt
-      - name: Check errors:
+      - name: Check errors
         shell: bash
         run: |
           make check-error
-      # - name: Debug
-      #   if: failure()
-      #   run: |
-      #     cat kyverno-pss.js-10vu-1000it-logs.txt
-
-        # uses: grafana/k6-action@v0.3.0
-        # with:
-          # filename: k6/tests/kyverno-pss.js 10 100
