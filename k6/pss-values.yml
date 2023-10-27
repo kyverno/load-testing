@@ -5,101 +5,101 @@ policyExclude:
     any:
     - resources:
         namespaces:
-        - load-tests
+        - load-test
         name: load-test*
   adding-capabilities-strict:
     any:
     - resources:
         namespaces:
-        - load-tests
+        - load-test
         name: load-test*
   disallow-host-namespaces:
     any:
     - resources:
         namespaces:
-        - load-tests
+        - load-test
         name: load-test*
   disallow-host-path:
     any:
     - resources:
         namespaces:
-        - load-tests
+        - load-test
         name: load-test*
   disallow-host-ports:
     any:
     - resources:
         namespaces:
-        - load-tests
+        - load-test
         name: load-test*
   disallow-host-process:
     any:
     - resources:
         namespaces:
-        - load-tests
+        - load-test
         name: load-test*
   disallow-privilege-escalation:
     any:
     - resources:
         namespaces:
-        - load-tests
+        - load-test
         name: load-test*
   disallow-privileged-containers:
     any:
     - resources:
         namespaces:
-        - load-tests
+        - load-test
         name: load-test*
   disallow-proc-mount:
     any:
     - resources:
         namespaces:
-        - load-tests
+        - load-test
         name: load-test*
   disallow-selinux:
     any:
     - resources:
         namespaces:
-        - load-tests
+        - load-test
         name: load-test*
   require-run-as-non-root-user:
     any:
     - resources:
         namespaces:
-        - load-tests
+        - load-test
         name: load-test*
   require-run-as-nonroot:
     any:
     - resources:
         namespaces:
-        - load-tests
+        - load-test
         name: load-test*
   restrict-apparmor-profiles:
     any:
     - resources:
         namespaces:
-        - load-tests
+        - load-test
         name: load-test*
   restrict-seccomp:
     any:
     - resources:
         namespaces:
-        - load-tests
+        - load-test
         name: load-test*
   restrict-seccomp-strict:
     any:
     - resources:
         namespaces:
-        - load-tests
+        - load-test
         name: load-test*
   restrict-sysctls:
     any:
     - resources:
         namespaces:
-        - load-tests
+        - load-test
         name: load-test*
   restrict-volume-types:
     any:
     - resources:
         namespaces:
-        - load-tests
+        - load-test
         name: load-test*
