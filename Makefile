@@ -67,4 +67,4 @@ kyverno-pss-block:
 
 .PHONY: check-error
 check-error:
-	@grep -q "level=error" "${SCRIPT}-${VUS}vu-${ITERATIONS}it-logs.txt" || (echo "Error found in the file."; exit 1)
+	@grep -q "level=error" "${SCRIPT}-${VUS}vu-${ITERATIONS}it-logs.txt" || (echo "Unexpected behavior during load testing, please check results."; exit 1)
