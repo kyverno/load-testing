@@ -45,7 +45,7 @@ jobs:
           export ITERATIONS=${{ join(matrix.iterations.values, ',') }}
           export SCRIPT=${{ join(matrix.scripts.values, ',') }}
           make kyverno-pss-block
-          cat ${SCRIPT}-${VUS}vu-${ITERATIONS}it-logs.txt
+          cat k6/${SCRIPT}-${VUS}vu-${ITERATIONS}it-logs.txt
       - name: Check errors:
         shell: bash
         run: |
