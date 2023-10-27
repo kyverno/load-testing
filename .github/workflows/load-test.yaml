@@ -1,0 +1,52 @@
+name: load-test
+
+permissions: {}
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+      - 'add_threshold'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run-load-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        vus:
+          - name: vu
+            values:
+              - 1000
+        iterations:
+          - name: iteration
+            values:
+              - 1000
+        scripts:
+          - name: script
+            values:
+              - kyverno-pss.js
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+      - name: Setup build env
+        uses: ./.github/actions/setup-test-env
+        timeout-minutes: 10
+      - name: Wait for kyverno ready
+        uses: ./.github/actions/kyverno-wait-ready
+      - name: Run local k6 test
+        shell: bash
+        run: |
+          export VUS=${{ join(matrix.vus.values, ',') }}
+          export ITERATIONS=${{ join(matrix.iterations.values, ',') }}
+          export SCRIPT=${{ join(matrix.scripts.values, ',') }}
+          make kyverno-pss-block
+          cat k6/${SCRIPT}-${VUS}vu-${ITERATIONS}it-logs.txt
+      - name: Check errors
+        shell: bash
+        run: |
+          make check-error

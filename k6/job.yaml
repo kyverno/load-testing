@@ -7,12 +7,11 @@ spec:
     spec:
       serviceAccountName: load-test
       containers:
-        - image: grafana/k6:0.45.0
+        - image: grafana/k6:0.47.0
           resources: {}
           name: k6
           securityContext:
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
             seccompProfile:
               type: RuntimeDefault
             capabilities:
