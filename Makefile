@@ -58,7 +58,7 @@ kind-deploy-kyverno: helm-add-repo helm-install-kyverno ## Deploy kyverno helm c
 
 VUS          ?= 10 
 ITERATIONS   ?= 1000
-SCRIPT       ?= "kyverno-pss.js"
+SCRIPT       ?= kyverno-pss.js
 
 .PHONY: kyverno-pss-block
 kyverno-pss-block:
