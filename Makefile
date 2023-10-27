@@ -58,13 +58,13 @@ kind-deploy-kyverno: helm-add-repo helm-install-kyverno ## Deploy kyverno helm c
 
 VUS          ?= 10 
 ITERATIONS   ?= 1000
-SCRIPT       ?= "kyverno-pss.js"
+SCRIPT       ?= kyverno-pss.js
 
 .PHONY: kyverno-pss-block
 kyverno-pss-block:
-	cd k6 \
+	cd k6 && \
 	./start.sh ./tests/${SCRIPT} ${VUS} ${ITERATIONS}
 
 .PHONY: check-error
 check-error:
-    @grep -q "level=error" "${SCRIPT}-${VUS}vu-${ITERATIONS}it-logs.txt" || (echo "Error found in the file."; exit 1)
+	@grep -q "level=error" "${SCRIPT}-${VUS}vu-${ITERATIONS}it-logs.txt" || (echo "Unexpected behavior during load testing, please check results."; exit 1)
