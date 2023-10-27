@@ -62,7 +62,7 @@ SCRIPT       ?= "kyverno-pss.js"
 
 .PHONY: kyverno-pss-block
 kyverno-pss-block:
-	cd k6 \
+	cd k6 && \
 	./start.sh ./tests/${SCRIPT} ${VUS} ${ITERATIONS}
 
 .PHONY: check-error
