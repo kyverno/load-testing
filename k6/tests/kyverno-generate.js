@@ -10,13 +10,6 @@ import {
   randomString,
 } from "./util.js";
 
-// export const options = {
-//   thresholds: {
-//     // 90% of requests should be below 600ms
-//     http_req_duration: ["p(90)<600"],
-//   },
-// };
-
 const baseUrl = buildKubernetesBaseUrl();
 const namespace = getTestNamespace();
 
