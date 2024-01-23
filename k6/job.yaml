@@ -3,29 +3,37 @@ kind: Job
 metadata:
   name: load-test
 spec:
+  podFailurePolicy:
+    rules:
+      - action: FailJob
+        onExitCodes:
+          containerName: k6
+          operator: In
+          values: [99]
+      - action: Ignore
+        onPodConditions:
+          - type: DisruptionTarget
   template:
     spec:
       serviceAccountName: load-test
       containers:
-        - image: grafana/k6:0.45.0
+        - image: grafana/k6:0.48.0
           resources: {}
           name: k6
           securityContext:
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
+            runAsUser: 12345
             seccompProfile:
               type: RuntimeDefault
             capabilities:
               drop:
-              - ALL
+                - ALL
           command:
-            - /bin/sh
-            - -c
+            - k6
           args:
-            - |
-              k6 run /script/script.js --summary-export=summary.json --no-usage-report
-              echo "============== STRIP =============="
-              cat summary.json
+            - run
+            - /script/script.js
+            - --no-usage-report
           env:
             - name: KUBERNETES_TOKEN
               valueFrom:
@@ -62,4 +70,4 @@ spec:
                 path: util.js
               - key: script.js
                 path: script.js
-      restartPolicy: OnFailure
+      restartPolicy: Never

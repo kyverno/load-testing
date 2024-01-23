@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-NAMESPACE="load-test"
+NAMESPACE="load-tests"
 
 if [[ $# -lt 3 ]]; then
 	echo "Usage: $0 <script> <vus> <iterations>" 1>&2
@@ -47,8 +47,18 @@ rm -rf "$SCRIPT_DIR"
 echo "Deploying k6 job..."
 kubectl apply -n "$NAMESPACE" -f job.yaml
 
-echo "Waiting for the job to be completed..."
-kubectl wait -n "$NAMESPACE" --for=condition=complete --timeout=600s jobs/load-test
+echo "Waiting for the job to finish..."
+kubectl wait -n $NAMESPACE --for=condition=complete --timeout=600s jobs/load-test &
+COMPLETE_PID=$!
+kubectl wait -n $NAMESPACE --for=condition=failed --timeout=600s jobs/load-test &
+FAILED_PID=$!
+wait -n $COMPLETE_PID $FAILED_PID
+kill $COMPLETE_PID $FAILED_PID 2> /dev/null || true
+
+echo "Getting job exit code..."
+POD_NAME=$(kubectl get pods -n "$NAMESPACE" -l job-name=load-test -o jsonpath='{.items[0].metadata.name}')
+EXIT_CODE=$(kubectl get pods -n "$NAMESPACE" "$POD_NAME" -o jsonpath='{.status.containerStatuses[0].state.terminated.exitCode}')
+echo "Job exit code: $EXIT_CODE"
 
 echo "Extracting logs and summary..."
 kubectl logs -n "$NAMESPACE" jobs/load-test > "$(basename "$SCRIPT")-${VUS}vu-${ITERATIONS}it-logs.txt"
@@ -65,3 +75,5 @@ if [[ $SCRIPT == *"kyverno-pss.js" ]]; then
 	echo "deleting PSS policies" 1>&2
 	helm uninstall kyverno-policies -n kyverno-policies
 fi
+
+exit $EXIT_CODE

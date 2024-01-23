@@ -14,7 +14,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: load-test
-  namespace: load-test
+  namespace: load-tests
 ---
 apiVersion: v1
 kind: Secret
