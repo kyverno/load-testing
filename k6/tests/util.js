@@ -28,6 +28,26 @@ export const generatePod = (name = 'test', image = 'nginx') => {
   }
 }
 
+export const generateVPA = (name = 'test-vpa', targetRefName = 'test', targetRefKind = 'Pod') => {
+  return {
+    kind: 'VerticalPodAutoscaler',
+    apiVersion: 'autoscaling.k8s.io/v1',
+    metadata: {
+      name: name,
+    },
+    spec: {
+      targetRef: {
+        apiVersion: 'v1',
+        kind: targetRefKind,
+        name: targetRefName,
+      },
+      updatePolicy: {
+        updateMode: 'Auto',
+      }
+    }
+  }
+}
+
 export const generateConfigmap = (name = 'test') => {
   return {
     kind: "ConfigMap",
