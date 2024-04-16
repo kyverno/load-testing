@@ -24,6 +24,7 @@ if [[ $SCRIPT == *"kyverno-pss.js" ]]; then
 	echo "installing PSS policies" 1>&2
 	helm repo add kyverno https://kyverno.github.io/kyverno/
 	helm install kyverno-policies --namespace kyverno-policies kyverno/kyverno-policies --create-namespace -f pss-values.yml
+	kubectl wait --for=condition=Ready --timeout=120s cpol -l app.kubernetes.io/name=kyverno-policies
 fi
 
 echo "Deploying namespace..."
