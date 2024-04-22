@@ -49,14 +49,13 @@ export function setup() {
 
 export default function () {
   const podName = `test-${randomString(8)}`;
-
   const pod = generatePod(podName);
   pod.metadata.labels = {
     app: "k6-test",
   };
 
   const createRes = http.post(
-    `${baseUrl}/api/v1/namespaces/${namespace}/pods`,
+    `${baseUrl}/api/v1/namespaces/${namespace}/pods?dryRun=All`,
     JSON.stringify(pod),
     params
   );
