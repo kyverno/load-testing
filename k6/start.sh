@@ -3,6 +3,7 @@
 set -euo pipefail
 
 NAMESPACE="load-tests"
+kubectl delete ns "$NAMESPACE"
 
 if [[ $# -lt 3 ]]; then
 	echo "Usage: $0 <script> <vus> <iterations>" 1>&2
@@ -28,6 +29,7 @@ if [[ $SCRIPT == *"kyverno-pss.js" ]]; then
 fi
 
 if [[ $SCRIPT == *"kyverno-mutate.js" ]]; then
+	rm /tmp/policies.json
 	echo "installing 10 mutate policies" 1>&2
 	node tests/utils/create-mutate-policies.js
 	kubectl create -f /tmp/policies.json
