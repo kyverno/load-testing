@@ -27,6 +27,13 @@ if [[ $SCRIPT == *"kyverno-pss.js" ]]; then
 	kubectl wait --for=condition=Ready --timeout=120s cpol -l app.kubernetes.io/name=kyverno-policies
 fi
 
+if [[ $SCRIPT == *"kyverno-mutate.js" ]]; then
+	echo "installing 10 mutate policies" 1>&2
+	node tests/utils/create-mutate-policies.js
+	kubectl apply -f /tmp/policies.json
+	kubectl wait --for=condition=Ready --timeout=120s cpol -l app.kubernetes.io/name=kyverno-policies
+fi
+
 echo "Deploying namespace..."
 kubectl create ns "$NAMESPACE"
 
@@ -75,6 +82,13 @@ kubectl delete ns "$NAMESPACE"
 if [[ $SCRIPT == *"kyverno-pss.js" ]]; then
 	echo "deleting PSS policies" 1>&2
 	helm uninstall kyverno-policies -n kyverno-policies
+fi
+
+if [[ $SCRIPT == *"kyverno-mutate.js" ]]; then
+	echo "installing 10 mutate policies" 1>&2
+	node tests/utils/create-mutate-policies.js
+	kubectl delete -f /tmp/policies.json
+	rm /tmp/policies.json
 fi
 
 exit $EXIT_CODE
