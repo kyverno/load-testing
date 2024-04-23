@@ -3,6 +3,7 @@
 set -euo pipefail
 
 NAMESPACE="load-tests"
+kubectl delete ns "$NAMESPACE"
 
 if [[ $# -lt 3 ]]; then
 	echo "Usage: $0 <script> <vus> <iterations>" 1>&2
@@ -24,6 +25,14 @@ if [[ $SCRIPT == *"kyverno-pss.js" ]]; then
 	echo "installing PSS policies" 1>&2
 	helm repo add kyverno https://kyverno.github.io/kyverno/
 	helm install kyverno-policies --namespace kyverno-policies kyverno/kyverno-policies --create-namespace -f pss-values.yml
+	kubectl wait --for=condition=Ready --timeout=120s cpol -l app.kubernetes.io/name=kyverno-policies
+fi
+
+if [[ $SCRIPT == *"kyverno-mutate.js" ]]; then
+	rm /tmp/policies.json
+	echo "installing 10 mutate policies" 1>&2
+	node tests/utils/create-mutate-policies.js
+	kubectl create -f /tmp/policies.json
 	kubectl wait --for=condition=Ready --timeout=120s cpol -l app.kubernetes.io/name=kyverno-policies
 fi
 
@@ -75,6 +84,12 @@ kubectl delete ns "$NAMESPACE"
 if [[ $SCRIPT == *"kyverno-pss.js" ]]; then
 	echo "deleting PSS policies" 1>&2
 	helm uninstall kyverno-policies -n kyverno-policies
+fi
+
+if [[ $SCRIPT == *"kyverno-mutate.js" ]]; then
+	echo "cleaning up 10 mutate policies" 1>&2
+	kubectl delete -f /tmp/policies.json
+	rm /tmp/policies.json
 fi
 
 exit $EXIT_CODE
