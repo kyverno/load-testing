@@ -17,34 +17,39 @@ const params = getParamsWithAuth();
 params.headers["Content-Type"] = "application/json";
 
 export function setup() {
-  const mutatePolicy = {
-    apiVersion: "kyverno.io/v1",
-    kind: "ClusterPolicy",
-    metadata: { name: "add-labels" },
-    spec: {
-      rules: [
-        {
-          match: { any: [{ resources: { kinds: ["Pod"] } }] },
-          mutate: {
-            patchStrategicMerge: {
-              metadata: { labels: { "+(team)": "bravo" } },
+  for (let i = 0; i < 16; i++) {
+    const mutatePolicy = {
+      apiVersion: "kyverno.io/v1",
+      kind: "ClusterPolicy",
+      metadata: {
+        name: `add-labels-${i}`,
+      },
+      spec: {
+        rules: [
+          {
+            match: { any: [{ resources: { kinds: ["Pod"] } }] },
+            mutate: {
+              patchesJson6902: `
+- path: "/metadata/labels/team"
+  op: add
+  value: bravo`,
             },
+            name: "add-team",
           },
-          name: "add-team",
-        },
-      ],
-    },
-  };
+        ],
+      },
+    };
 
-  const createRes = http.post(
-    `${baseUrl}/apis/kyverno.io/v1/clusterpolicies`,
-    JSON.stringify(mutatePolicy),
-    params
-  );
+    const createRes = http.post(
+      `${baseUrl}/apis/kyverno.io/v1/clusterpolicies`,
+      JSON.stringify(mutatePolicy),
+      params
+    );
 
-  check(createRes, {
-    "verify response code of POST is 201": (r) => r.status === 201,
-  });
+    check(createRes, {
+      "verify response code of POST is 201": (r) => r.status === 201,
+    });
+  }
 }
 
 export default function () {
@@ -66,15 +71,17 @@ export default function () {
 }
 
 export function teardown() {
-  const deleteRes = http.del(
-    `${baseUrl}/apis/kyverno.io/v1/clusterpolicies/add-labels`,
-    null,
-    params
-  );
+  for (let i = 0; i < 16; i++) {
+    const deleteRes = http.del(
+      `${baseUrl}/apis/kyverno.io/v1/clusterpolicies/add-labels-${i}`,
+      null,
+      params
+    );
 
-  check(deleteRes, {
-    "verify response code of DELETE is 200": (r) => r.status === 200,
-  });
+    check(deleteRes, {
+      "verify response code of DELETE is 200": (r) => r.status === 200,
+    });
+  }
 }
 
 export function handleSummary(data) {
