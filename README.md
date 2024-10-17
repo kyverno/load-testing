@@ -17,7 +17,6 @@ make run -- k6/tests/kyverno-pss.js -e SCENARIO=breakpoint
 ```
 
 Or,
-
 ```bash
 make run --  k6/tests/kyverno-pss.js --vus 100 --iterations 1000
 ```
