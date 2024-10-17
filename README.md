@@ -22,7 +22,7 @@ Or,
 make run --  k6/tests/kyverno-pss.js --vus 100 --iterations 1000
 ```
 
-This will install `k6` and run the test `k6/tests/kyverno-pods.js` with 100 virtual users and 1000 iterations.
+This will install `k6` and run the test `k6/tests/kyverno-pss.js` with 100 virtual users and 1000 iterations.
 
 ## What do the tests do?
 
