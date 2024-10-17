@@ -18,131 +18,129 @@ const params = getParamsWithAuth();
 params.headers["Content-Type"] = "application/json";
 
 export function setup() {
-  const disallowHostNamespacesClusterPolicy = {
-    apiVersion: "kyverno.io/v2beta1",
-    kind: "ClusterPolicy",
-    metadata: {
-      name: "disallow-host-namespaces",
-    },
-    spec: {
-      background: false,
-      rules: [
-        {
-          match: { any: [{ resources: { kinds: ["Pod"] } }] },
-          name: "host-namespaces",
-          validate: {
-            message:
-              "Sharing the host namespaces is disallowed. The fields spec.hostNetwork, spec.hostIPC, and spec.hostPID must be unset or set to `false`.",
-            pattern: {
-              spec: {
-                "=(hostIPC)": "false",
-                "=(hostNetwork)": "false",
-                "=(hostPID)": "false",
-              },
-            },
-          },
-        },
-      ],
-      validationFailureAction: "Enforce",
-    },
-  };
-  const clusterPolicyCreationResult = http.post(
-    `${baseUrl}/apis/kyverno.io/v2beta1/clusterpolicies`,
-    JSON.stringify(disallowHostNamespacesClusterPolicy),
-    params
-  );
-  check(clusterPolicyCreationResult, {
-    "verify response code of POST is 201": (r) => r.status === 201,
-  });
-
-  const numPolex = exec.test.options.scenarios.default.iterations;
+  const numPolex = 8000;
+  console.log(numPolex);
   for (let i = 0; i < numPolex; i++) {
     const polex = {
       apiVersion: "kyverno.io/v2beta1",
       kind: "PolicyException",
       metadata: {
-        name: `delta-${i}-exception`,
+        name: `pscp-exception-tfap-lnp-dev-${i}`,
         namespace: namespace,
       },
       spec: {
         exceptions: [
           {
-            policyName: "disallow-host-namespaces",
-            ruleNames: ["host-namespaces", "autogen-host-namespaces"],
+            policyName: "disallow-capabilities-strict",
+            ruleNames: [
+              "require-drop-cap_net_bind_service",
+              "require-drop-cap-net_raw",
+              "require-drop-cap-sys_admin",
+            ],
+          },
+          {
+            policyName: "disallow-privilege-escalation",
+            ruleNames: [
+              "disallow-privilege-escalation",
+              "autogen-disallow-privilege-escalation",
+            ],
+          },
+          {
+            policyName: "require-run-as-non-root-fs-group-id",
+            ruleNames: ["run-as-non-root-fs-group-id"],
+          },
+          {
+            policyName: "disallow-privileged-containers",
+            ruleNames: ["disallow-privileged-containers"],
+          },
+          {
+            policyName: "disallow-host-network-namespaces",
+            ruleNames: ["disallow-host-network-namespaces"],
+          },
+          {
+            policyName: "disallow-host-ipc-namespaces",
+            ruleNames: ["disallow-host-ipc-namespaces"],
+          },
+          {
+            policyName: "disallow-host-ports",
+            ruleNames: ["disallow-host-ports"],
+          },
+          {
+            policyName: "disallow-host-ports-range",
+            ruleNames: ["disallow-host-ports-range"],
+          },
+          {
+            policyName: "require-run-as-nonroot",
+            ruleNames: ["run-as-non-root", "autogen-run-as-non-root"],
+          },
+          {
+            policyName: "require-run-as-non-root-user-id",
+            ruleNames: ["run-as-non-root-user-id"],
+          },
+          {
+            policyName: "require-run-as-non-root-supplemental-group-id",
+            ruleNames: ["run-as-non-root-supplemental-group-id"],
+          },
+          {
+            policyName: "restrict-volume-types",
+            ruleNames: ["restricted-volumes"],
+          },
+          {
+            policyName: "require-ro-rootfs",
+            ruleNames: [
+              "validate-readonly-root-filesystem",
+              "autogen-validate-readonly-root-filesystem",
+            ],
           },
         ],
         match: {
           any: [
             {
               resources: {
-                kinds: ["Pod", "Deployment"],
-                names: [`important-${i}-tool*`],
-                namespaces: [namespace],
+                annotations: {
+                  "application.tess.io/name": `tfaplnp-${i}`,
+                  "environment.tess.io/name": `dev-${i}`,
+                },
+                kinds: ["Pod", "Job"],
+                operations: ["CREATE", "UPDATE"],
               },
             },
           ],
         },
       },
     };
+
     const polexCreationResult = http.post(
       `${baseUrl}/apis/kyverno.io/v2beta1/namespaces/${namespace}/policyexceptions`,
       JSON.stringify(polex),
       params
     );
+    console.log("POLEX Creation " + polexCreationResult.status + " " + polexCreationResult.status_text)
+
     check(polexCreationResult, {
-      "verify response code of POST is 201": (r) => r.status === 201,
+      "verify response code of POLEX Creation is 201": (r) => r.status == 201,
     });
   }
 }
 
 export default function () {
-  const deployment = {
-    apiVersion: "apps/v1",
-    kind: "Deployment",
-    metadata: {
-      labels: { app: "busybox" },
-      name: `important-${exec.scenario.iterationInTest}-tool`,
-      namespace: namespace,
-    },
-    spec: {
-      replicas: 1,
-      selector: { matchLabels: { app: "busybox" } },
-      template: {
-        metadata: { labels: { app: "busybox" } },
-        spec: {
-          containers: [
-            {
-              command: ["sleep", "1d"],
-              image: "busybox:1.35",
-              name: "busybox",
-            },
-          ],
-          hostIPC: true,
-        },
-      },
-    },
+  const podName = `test-${randomString(8)}`;
+  const pod = generatePod(podName);
+  pod.metadata.labels = {
+    app: "k6-test",
   };
 
+  pod.metadata.labels["environment.tess.io/name"] = "feature";
+
   const createResult = http.post(
-    `${baseUrl}/apis/apps/v1/namespaces/${namespace}/deployments`,
-    JSON.stringify(deployment),
+    `${baseUrl}/api/v1/namespaces/${namespace}/pods`,
+    JSON.stringify(pod),
     params
   );
+  console.log("POD Creation " + createResult.status + " " + createResult.status_text)
 
   check(createResult, {
-    "verify response code of POST is 201": (r) => r.status === 201,
-  });
-}
-
-export function teardown() {
-  const deleteResult = http.del(
-    `${baseUrl}/apis/kyverno.io/v2beta1/clusterpolicies/disallow-host-namespaces`,
-    null,
-    params
-  );
-
-  check(deleteResult, {
-    "verify response code of DELETE is 200": (r) => r.status === 200,
+    "verify response code of POD Creation is 400": (r) => r.status === 400,
   });
 }
 
