@@ -72,7 +72,7 @@ export let options = {
     ], // 95% of requests should be below 600ms
     "checks{type:average}": [{ threshold: "rate>0.99", abortOnFail: true }],
     "http_req_duration{type:average}": [
-      { threshold: "p(95)<2000", abortOnFail: true },
+      { threshold: "p(95)<1000", abortOnFail: true },
     ],
     "checks{type:stress}": [{ threshold: "rate>0.99", abortOnFail: true }],
     "http_req_duration{type:stress}": [
