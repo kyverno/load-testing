@@ -71,10 +71,10 @@ const config = getConfig();
 export let options = {
   scenarios: {},
   thresholds: {
-    "checks{type:smoke}": [ // checks should pass for 99% of requests
+    "checks{type:smoke}": [  // checks should pass for (config.smoke.rate*100)% of requests
       { threshold: `rate>${config.smoke.rate}`, abortOnFail: true },
     ],
-    "http_req_duration{type:smoke}": [
+    "http_req_duration{type:smoke}": [  // 95% of requests should be below (config.smoke.duration)ms
       { threshold: `p(95)<${config.smoke.duration}`, abortOnFail: true },
     ],
     "checks{type:average}": [
@@ -82,7 +82,7 @@ export let options = {
     ],
     "http_req_duration{type:average}": [
       { threshold: `p(95)<${config.average.duration}`, abortOnFail: true },
-    ], // 95% of requests should be below 600ms
+    ],
     "checks{type:stress}": [
       { threshold: `rate>${config.stress.rate}`, abortOnFail: true },
     ],
