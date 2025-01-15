@@ -9,6 +9,9 @@ import {
   randomString,
 } from "./util.js";
 
+import { getConfig } from "./config.js";
+
+
 let scenarios = {
   smoke: {
     executor: "constant-vus",
@@ -63,33 +66,48 @@ let scenarios = {
   },
 };
 
+
+const config = getConfig();
 export let options = {
   scenarios: {},
   thresholds: {
-    "checks{type:smoke}": [{ threshold: "rate>0.99", abortOnFail: true }], // checks should pass for 99% of requests
-    "http_req_duration{type:smoke}": [
-      { threshold: "p(95)<600", abortOnFail: true },
-    ], // 95% of requests should be below 600ms
-    "checks{type:average}": [{ threshold: "rate>0.99", abortOnFail: true }],
+    "checks{type:smoke}": [  // checks should pass for (config.smoke.rate*100)% of requests
+      { threshold: `rate>${config.smoke.rate}`, abortOnFail: true },
+    ],
+    "http_req_duration{type:smoke}": [  // 95% of requests should be below (config.smoke.duration)ms
+      { threshold: `p(95)<${config.smoke.duration}`, abortOnFail: true },
+    ],
+    "checks{type:average}": [
+      { threshold: `rate>${config.average.rate}`, abortOnFail: true },
+    ],
     "http_req_duration{type:average}": [
-      { threshold: "p(95)<800", abortOnFail: true },
+      { threshold: `p(95)<${config.average.duration}`, abortOnFail: true },
     ],
-    "checks{type:stress}": [{ threshold: "rate>0.99", abortOnFail: true }],
+    "checks{type:stress}": [
+      { threshold: `rate>${config.stress.rate}`, abortOnFail: true },
+    ],
     "http_req_duration{type:stress}": [
-      { threshold: "p(95)<1600", abortOnFail: true },
+      { threshold: `p(95)<${config.stress.duration}`, abortOnFail: true },
     ],
-    "checks{type:soak}": [{ threshold: "rate>0.99", abortOnFail: true }],
+    "checks{type:soak}": [
+      { threshold: `rate>${config.soak.rate}`, abortOnFail: true },
+    ],
     "http_req_duration{type:soak}": [
-      { threshold: "p(95)<800", abortOnFail: true },
+      { threshold: `p(95)<${config.soak.duration}`, abortOnFail: true },
     ],
-    "checks{type:spike}": [{ threshold: "rate>0.99", abortOnFail: true }],
+    "checks{type:spike}": [
+      { threshold: `rate>${config.spike.rate}`, abortOnFail: true },
+    ],
     "http_req_duration{type:spike}": [
-      { threshold: "p(95)<3200", abortOnFail: true },
+      { threshold: `p(95)<${config.spike.duration}`, abortOnFail: true },
     ],
-    "checks{type:breakpoint}": [{ threshold: "rate>0.99", abortOnFail: true }],
+    "checks{type:breakpoint}": [
+      { threshold: `rate>${config.breakpoint.rate}`, abortOnFail: true },
+    ],
   },
   teardownTimeout: "10m",
 };
+
 
 if (__ENV.SCENARIO) {
   // Use just a single scenario if `--env scenario=foo` is used.
