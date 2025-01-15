@@ -7,7 +7,7 @@ export function getConfig() {
       },
       average: {
         rate: parseFloat(__ENV.AVERAGE_RATE || "0.99"),
-        duration: parseInt(__ENV.AVERAGE_DURATION || "800"),
+        duration: parseInt(__ENV.AVERAGE_DURATION || "10"),
       },
       stress: {
         rate: parseFloat(__ENV.STRESS_RATE || "0.99"),
