@@ -1,0 +1,38 @@
+name: Unit Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+      - release*
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14, 16, 18] # Test against multiple Node.js versions
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 # Check out the code repository
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3 # Setup Node.js environment
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm install # Install project dependencies
+
+      - name: Run tests
+        run: npm test # Run Jest tests
+
+      - name: Upload test results
+        if: always() # Upload results even if tests fail
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: ./test-results # Customize this path if you generate test reports
