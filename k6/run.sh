@@ -28,6 +28,13 @@ if [[ $TEST == *"kyverno-pss.js" ]] || [[ $TEST == *"kyverno-polex.js" ]]; then
     kubectl wait --for=condition=Ready --timeout=120s cpol -l app.kubernetes.io/name=kyverno-policies
 fi
 
+if [[ $TEST == *"kyverno-vpol-pss.js" ]]; then
+    echo "Installing PSS ValidadingPolicies..." 1>&2
+    kubectl apply -k github.com/kyverno/policies/pod-security-vpol/baseline
+    kubectl apply -k github.com/kyverno/policies/pod-security-vpol/restricted
+    kubectl wait --for=condition=Ready --timeout=120s vpol
+fi
+
 echo "Deploying namespace..."
 kubectl create ns "$NAMESPACE"
 
