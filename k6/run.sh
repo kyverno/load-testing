@@ -4,11 +4,16 @@ set -euo pipefail
 
 NAMESPACE="load-tests"
 
+TEST="$1"
+
 cleanup() {
     echo "Performing cleanup..."
     kubectl delete -n "$NAMESPACE" -f k6/rbac.yaml || true
     if [[ "$@" =~ "--no-teardown" ]]; then
         echo "No teardown requested"
+    elif [[ $TEST == *"kyverno-vpol-pss.js" ]]; then
+        kubectl delete ns "$NAMESPACE" || true
+        kubectl delete vpol --all || true
     else
         kubectl delete ns "$NAMESPACE" || true
 	    helm uninstall kyverno-policies -n kyverno-policies || true
@@ -18,8 +23,6 @@ cleanup() {
 
 # Set trap to call cleanup function on script exit
 trap 'cleanup $@' EXIT
-
-TEST="$1"
 
 if [[ $TEST == *"kyverno-pss.js" ]] || [[ $TEST == *"kyverno-polex.js" ]]; then
     echo "Installing PSS policies..." 1>&2
@@ -32,7 +35,6 @@ if [[ $TEST == *"kyverno-vpol-pss.js" ]]; then
     echo "Installing PSS ValidadingPolicies..." 1>&2
     kubectl apply -k github.com/kyverno/policies/pod-security-vpol/baseline
     kubectl apply -k github.com/kyverno/policies/pod-security-vpol/restricted
-    kubectl wait --for=condition=Ready --timeout=120s vpol
 fi
 
 echo "Deploying namespace..."
