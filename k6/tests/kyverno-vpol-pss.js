@@ -131,7 +131,7 @@ export default function () {
   params.headers["Content-Type"] = "application/json";
 
   const createRes = http.post(
-    `${baseUrl}/api/v1/namespaces/${namespace}/pods`,
+    `${baseUrl}/api/v1/namespaces/${namespace}/pods?dryRun=All`,
     JSON.stringify(pod),
     params
   );
