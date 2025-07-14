@@ -33,8 +33,8 @@ fi
 
 if [[ $TEST == *"kyverno-vpol-pss.js" ]]; then
     echo "Installing PSS ValidadingPolicies..." 1>&2
-    kubectl apply -k github.com/kyverno/policies/pod-security-vpol/baseline
-    kubectl apply -k github.com/kyverno/policies/pod-security-vpol/restricted
+    kubectl apply -k 'github.com/kyverno/policies/pod-security-vpol/baseline?ref=load-tests'
+    kubectl apply -k 'github.com/kyverno/policies/pod-security-vpol/restricted?ref=load-tests'
 fi
 
 echo "Deploying namespace..."
