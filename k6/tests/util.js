@@ -11,6 +11,8 @@ export const generatePod = (name = "test", image = "registry.k8s.io/pause") => {
           name: "test",
           image,
           securityContext: {
+            allowPrivilegeEscalation: false,
+            runAsNonRoot: true,
             seccompProfile: {
               type: "RuntimeDefault",
             },
