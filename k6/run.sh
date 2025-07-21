@@ -37,6 +37,9 @@ if [[ $TEST == *"kyverno-vpol-pss.js" ]]; then
     kubectl apply -k 'github.com/kyverno/policies/pod-security-vpol/restricted?ref=load-tests'
 fi
 
+echo "Waiting..."
+sleep 10
+
 echo "Deploying namespace..."
 kubectl create ns "$NAMESPACE"
 
