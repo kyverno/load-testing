@@ -14,6 +14,10 @@ cleanup() {
     elif [[ $TEST == *"kyverno-vpol-pss.js" ]]; then
         kubectl delete ns "$NAMESPACE" || true
         kubectl delete vpol --all || true
+    elif [[ $TEST == *"kyverno-vap-pss.js" ]]; then
+        kubectl delete ns "$NAMESPACE" || true
+        kubectl delete vpol --all || true
+        kubectl delete validatingadmissionpolicy --all || true
     else
         kubectl delete ns "$NAMESPACE" || true
 	    helm uninstall kyverno-policies -n kyverno-policies || true
