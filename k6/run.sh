@@ -42,13 +42,13 @@ if [[ $TEST == *"kyverno-vpol-pss.js" ]]; then
 fi
 
 if [[ $TEST == *"kyverno-vap-pss.js" ]]; then
-    echo "Installing PSS ValidadingPolicies..." 1>&2
+    echo "Installing PSS ValidadingAdmissionPolicies..." 1>&2
     kubectl apply -k 'github.com/kyverno/policies/pod-security-vpol/baseline?ref=vap-load-tests'
     kubectl apply -k 'github.com/kyverno/policies/pod-security-vpol/restricted?ref=vap-load-tests'
 fi
 
 echo "Waiting..."
-sleep 10
+sleep 20
 
 echo "Deploying namespace..."
 kubectl create ns "$NAMESPACE"
