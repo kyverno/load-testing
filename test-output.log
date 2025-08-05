@@ -1,0 +1,95 @@
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: k6/tests/kyverno-pss.js
+        output: -
+
+     scenarios: (100.00%) 1 scenario, 200 max VUs, 10m30s max duration (incl. graceful stop):
+              * default: 5000 iterations shared among 200 VUs (maxDuration: 10m0s, gracefulStop: 30s)
+
+
+running (00m01.0s), 200/200 VUs, 1134 complete and 0 interrupted iterations
+default   [  23% ] 200 VUs  00m01.0s/10m0s  1134/5000 shared iters
+
+running (00m02.0s), 200/200 VUs, 2684 complete and 0 interrupted iterations
+default   [  54% ] 200 VUs  00m02.0s/10m0s  2684/5000 shared iters
+
+running (00m03.0s), 200/200 VUs, 4424 complete and 0 interrupted iterations
+default   [  88% ] 200 VUs  00m03.0s/10m0s  4424/5000 shared iters
+
+
+  █ THRESHOLDS 
+
+    checks{type:average}
+    ✓ 'rate>0.99' rate=0.00%
+
+    checks{type:breakpoint}
+    ✓ 'rate>0.99' rate=0.00%
+
+    checks{type:smoke}
+    ✓ 'rate>0.99' rate=0.00%
+
+    checks{type:soak}
+    ✓ 'rate>0.99' rate=0.00%
+
+    checks{type:spike}
+    ✓ 'rate>0.99' rate=0.00%
+
+    checks{type:stress}
+    ✓ 'rate>0.99' rate=0.00%
+
+    http_req_duration{type:average}
+    ✓ 'p(95)<800' p(95)=0s
+
+    http_req_duration{type:smoke}
+    ✓ 'p(95)<600' p(95)=0s
+
+    http_req_duration{type:soak}
+    ✓ 'p(95)<800' p(95)=0s
+
+    http_req_duration{type:spike}
+    ✓ 'p(95)<3200' p(95)=0s
+
+    http_req_duration{type:stress}
+    ✓ 'p(95)<1600' p(95)=0s
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......................: 5000    1533.052928/s
+    checks_succeeded...................: 100.00% 5000 out of 5000
+    checks_failed......................: 0.00%   0 out of 5000
+
+    ✓ verify Pod is created
+
+    HTTP
+    http_req_duration.......................................................: avg=128.54ms min=1.64ms med=90.44ms max=603.16ms p(90)=303.32ms p(95)=380.22ms
+      { expected_response:true }............................................: avg=128.54ms min=1.64ms med=90.44ms max=603.16ms p(90)=303.32ms p(95)=380.22ms
+      { type:average }......................................................: avg=0s       min=0s     med=0s      max=0s       p(90)=0s       p(95)=0s      
+      { type:smoke }........................................................: avg=0s       min=0s     med=0s      max=0s       p(90)=0s       p(95)=0s      
+      { type:soak }.........................................................: avg=0s       min=0s     med=0s      max=0s       p(90)=0s       p(95)=0s      
+      { type:spike }........................................................: avg=0s       min=0s     med=0s      max=0s       p(90)=0s       p(95)=0s      
+      { type:stress }.......................................................: avg=0s       min=0s     med=0s      max=0s       p(90)=0s       p(95)=0s      
+    http_req_failed.........................................................: 0.00%  0 out of 5001
+    http_reqs...............................................................: 5001   1533.359538/s
+
+    EXECUTION
+    iteration_duration......................................................: avg=128.91ms min=9.8ms  med=90.56ms max=603.22ms p(90)=304.02ms p(95)=381.38ms
+    iterations..............................................................: 5000   1533.052928/s
+    vus.....................................................................: 200    min=200       max=200
+    vus_max.................................................................: 200    min=200       max=200
+
+    NETWORK
+    data_received...........................................................: 13 MB  4.0 MB/s
+    data_sent...............................................................: 7.2 MB 2.2 MB/s
+
+
+
+
+running (00m03.3s), 000/200 VUs, 5000 complete and 0 interrupted iterations
+default ✓ [ 100% ] 200 VUs  00m03.3s/10m0s  5000/5000 shared iters

@@ -4,11 +4,20 @@ set -euo pipefail
 
 NAMESPACE="load-tests"
 
+TEST="$1"
+
 cleanup() {
     echo "Performing cleanup..."
     kubectl delete -n "$NAMESPACE" -f k6/rbac.yaml || true
     if [[ "$@" =~ "--no-teardown" ]]; then
         echo "No teardown requested"
+    elif [[ $TEST == *"kyverno-vpol-pss.js" ]]; then
+        kubectl delete ns "$NAMESPACE" || true
+        kubectl delete vpol --all || true
+    elif [[ $TEST == *"kyverno-vap-pss.js" ]]; then
+        kubectl delete ns "$NAMESPACE" || true
+        kubectl delete vpol --all || true
+        kubectl delete validatingadmissionpolicy --all || true
     else
         kubectl delete ns "$NAMESPACE" || true
 	    helm uninstall kyverno-policies -n kyverno-policies || true
@@ -19,14 +28,27 @@ cleanup() {
 # Set trap to call cleanup function on script exit
 trap 'cleanup $@' EXIT
 
-TEST="$1"
-
 if [[ $TEST == *"kyverno-pss.js" ]] || [[ $TEST == *"kyverno-polex.js" ]]; then
     echo "Installing PSS policies..." 1>&2
     helm repo add kyverno https://kyverno.github.io/kyverno/
     helm install kyverno-policies --namespace kyverno-policies kyverno/kyverno-policies --create-namespace -f k6/pss-values.yml
     kubectl wait --for=condition=Ready --timeout=120s cpol -l app.kubernetes.io/name=kyverno-policies
 fi
+
+if [[ $TEST == *"kyverno-vpol-pss.js" ]]; then
+    echo "Installing PSS ValidadingPolicies..." 1>&2
+    kubectl apply -k 'github.com/kyverno/policies/pod-security-vpol/baseline?ref=load-tests'
+    kubectl apply -k 'github.com/kyverno/policies/pod-security-vpol/restricted?ref=load-tests'
+fi
+
+if [[ $TEST == *"kyverno-vap-pss.js" ]]; then
+    echo "Installing PSS ValidadingAdmissionPolicies..." 1>&2
+    kubectl apply -k 'github.com/kyverno/policies/pod-security-vpol/baseline?ref=vap-load-tests'
+    kubectl apply -k 'github.com/kyverno/policies/pod-security-vpol/restricted?ref=vap-load-tests'
+fi
+
+echo "Waiting..."
+sleep 20
 
 echo "Deploying namespace..."
 kubectl create ns "$NAMESPACE"
